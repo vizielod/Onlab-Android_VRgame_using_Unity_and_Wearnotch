@@ -46,15 +46,25 @@ Tehát itt szeretném részletesen lépésről lépésre bemutatni azt, hogy jel
 11. Itt már végrehajtottam a Unity Projekt Importálását a Demo App-ba, hogy ki tudjam próbálni az eddigieket. Ezt a folyamatot pedig a KÖVETKEZŐ (7. fejezet) fejezetben leírtak alapján tudjuk megtenni!
 12. Majd tesztelésképp annyit csináltam első körben, hogy a Demo App MainFragment osztályában található getSteadyData() függvényhez tartozó OnClick eseményre elindítottam a UnityPlayerActivity és üzenetként átadtam egy tetszőleges stringet (‘notchposition’). Ezt a UnityPlayerActivity onStart() állapotában felfogtam és a UnitySendMessage függvény segítségével meghívtam az imént Unity-ben implementált PluginScript objektumban található PluginWrapper C# osztály SetText(string) függvényét.
 
-        ```
+```
         Intent intent = new Intent(getBaseActivity(), UnityPlayerActivity.class);
         intent.putExtra("message", "notchposition");
         startActivity(intent);
-        ```
+```
 
       * Itt megemlíteném, hogy ahhoz, hogy a tényleges szenzoroktól kapott adatokat tudjam továbbítani az adott Text mezőbe ezt a funkciót áthelyeztem a Start Real-Time hatására elinduló VisualiserActivity-be. Ahol a teszteléshez csak rögtönzötten a jobb felső sarokban lévő felül nézetre átváltó gomb (button_top_view) eseménykezelőjét , az onTopViewClicked() függvényt írtam át, hogy ez hívja a UnityPlayerActivity-t és indítsa el a Unity-ből exportált projektet.
 13. Miután ezzel a módszerrel sikerrel jártam átültettem a konzulensem által mutatott GitHub projekt (https://github.com/inbgche/Unity-Android-Communication) RocketLuncher Unity projekt Assets -> Scripts -> AndroidManager osztályában található kódot.
 14. Majd ennek megfelelően az Android Studio-ba importalt UnityPlayerActivity osztályban implementáltam a javaTestFunc(string) függvényt amit az Activity elindításakor a C#-ban található Start() függvény hív meg.
+```
+public void javaTestFunc(String strFromUnity){
+        Bundle bundle = getIntent().getExtras();
+        i++;
+        String message = i + "" + bundle.getString("message");
+        //UnityPlayer.UnitySendMessage("PluginScript", "SetText", message);
+        //UnityPlayer.UnitySendMessage("PluginScript", "SetJavaLog", strFromUnity + "HelloWorld");
+        UnityPlayer.UnitySendMessage("PluginScript", "SetJavaLog", message);
+    }
+```
 15. Annyit módosítottam a kódon, hogy én a javaTestFunc(string) függvényből nem a paraméterként kapott stringet íratom ki, hanem ez lehetne akár paraméter nélküli függvény is, mivel én itt a híváskor átadott “message” névvel jelölt kulcs értékét adom át és azzal hívom a C# kód SetJavaLog(string) függvényét, ami a myText mező értékének átadja ezt a karakterláncot.
 16. Itt végül még, hogy meggyőződjek arról, hogy a C# kódban található frissítés működik (és a probléma valóban az, hogy csak az utolsó NotchPosition sztringet veszi át) a Start()-ban hívott InvokeRepeating() függvény segítségével próbáltam ki, ami aminek megadtam, hogy az indulástól számított 0,1. másodperctől 0,1 másodpercenként hívja meg a repeatCall() függvényt, ami ugyanazt csinálja mint korábban a Start() maga tette, azaz elsüti a Java-ban található JavaTestFunc() függvényt.
 17. Ezek után a UnityPlayerActivity osztály javaTestFunc() fügvényéhez hozzávettem egy sima integer változót amit minden függvényhíváskor növelek egyel, így azt látom a képernyőre kiírt üzeneten, hogy valóban minden 0,1. másodpercben ismét meghívódik ez a függvény és a kiírás is újra megtörténik, mivel ez a számláló pörög felfele, viszont a szenzor pozíciójának adatának továbbra is csak az utolsó Activity indításkor átadott paraméter íródik ki. (A képen látható 281-es szám ez a számláló)
