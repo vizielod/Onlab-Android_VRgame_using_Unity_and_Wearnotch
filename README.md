@@ -1,5 +1,13 @@
-# Onlab-Android_VRgame_using_Unity_and_Wearnotch
+# Android and Unity communication for VR games using Wearnotch motion tracking system
 This is the pilot project of a Fitness VR game which should use the wearnotch motion tracking system to track our movements and motions. For the 3D side of the game I will use Unity. Tha game will run on Android phones first.
+
+Sorry but for now this documentation is part of a university project at BME, so the documentation is in hungarian, but planning to write one in english, somewhere in the near future.
+
+Feel free to use this project for now. If you have any further question PM me at elod.vizi@yahoo.com.
+
+# Android és Unity közötti valós idejű kommunikáció megvalósítása Wearnotch mozgáskövető rendszert használó VR játékhoz
+
+A Repository Wiki oldalán egy részletesebb leírás található, az alábbiakban ezekből kivágott fontosabb részletek, egy lerövidített változat olvasható. Ha bármilyen kérdésed akad a projekttel, működéssel kapcsolatban, keress fel bátran az elod.vizi@yahoo.com címen.
 
 ## 1. Projekt célja, motiváció, eredeti ötlet
 
@@ -45,7 +53,7 @@ Mivel az itt található lépések elég érthetően és egyértelműen leírjá
 
 LogCat üzenetek segítségével sikerült kiderítenem, hogy hogyan is valósul meg az eszköz és az alkalmazás közötti kommunikáció, vagyis pontosabban az, hogy az alkalmazás, hogyan dolgozza fel ezeket az adatokat.
 
-A VisualiserActivity osztály CalculateAngles() függvényében történik a varázslat.
+A **VisualiserActivity** osztály **CalculateAngles()** függvényében történik a varázslat.
 
 ![](https://github.com/vizielod/Onlab-Android_VRgame_using_Unity_and_Wearnotch/blob/master/img/LogCat_1.JPG)
 
@@ -56,19 +64,19 @@ Azt még itt megjegyezném, hogy amennyiben csak egy szenzort használunk a mér
 ## 5. Unity Projekt és Android app közötti kommunikáció felépítése
 
 Következő lépésként arra jutottam, hogy szükség lesz valamilyen valós idejű kommunikációra a meglévő alkalmazás és a Unity projekt között. Kis brainstormingolás, utánaolvasgatás, fórum és youtube videótár böngészés után arra jutottam, hogy ezt a kommunikációt az alábbi módszerekkel lehetne megvalósítani:
-* WebSocket segítségével
+* **WebSocket segítségével**
   * valószínűleg járható út
   * de nem egyszerű
   * több mint valószínű, hogy overkill lenne (legalábbis nekem annak tűnt)
   * utánanéztem a technológiának, de nem próbáltam megvalósítani, túl bonyolultnak tűnt ahhoz, hogy ez legyen a legoptimálisabb megoldás
 
-* Plugin használatával
+* **Plugin használatával**
   * sok jól érthető, jól követhető és részletes tutorialt találtam 
   * számomra az alábbi trailer tűnt az egyik legérthetőbbnek:
   * https://www.youtube.com/watch?v=EElBAGkjPt4
   * de sajnos bárhogy próbálkoztam nem sikerült ugyan azt az eredményt elérjem amit a videóban is látunk
 
-* Unity projekt gradle exportálás majd importálás az Android Projektbe.
+* **Unity projekt gradle exportálás majd importálás az Android Projektbe.**
   * végül ezt az utat próbáltam bejárni és ebből próbáltam volna megszülni a megoldást, de sajnos a real-time kommunikációt még ezzel sem sikerült megoldani mivel amikor egy gombnyomás hatására meghívom a beimportált UnityPlayerActivity-t, akkor ezzel egy új Activity indul, ami Android környezetben azt jelenti, hogy a korábban futó Activity Pause() állapotba kerül így sajnos a notch-tól való mintavételezés is leáll.
   * ennek a problémának a kiküszöbölésére próbáltam valamilyen Fragment-es megközelítést, mivel attól az Activity továbbra is fut a háttérben, de ezzel sem sikerült az amit szerettem volna. Az, hogy pontosan mit próbáltam és mi sült ki belőle részletesen bemutatom a következő fejezetbe.
   * tehát itt arra a következtetésre jutottam és jutottunk a konzulensemmel, hogy valószínűleg a Demo App-ot valahogy egy háttérben futó service-ként kéne kezelni, ezt a megközelítést szeretném a nyáron megvalósítani, hogy szeptembertől tudjam folytatni a projektet Szakdolgozatként és már tudjak a konkrét játék/alkalmazás Unityben való megtervezésével foglalkozni.
@@ -98,15 +106,18 @@ Tehát itt szeretném részletesen lépésről lépésre bemutatni azt, hogy jel
 
 1. Vegyük azt kiindulási alapnak, hogy megvan a működő és futtatható Demo app (3. pontban leírtak alapján)
 2. Hozzunk létre egy Unity projektet.
-3. Nevezzük át az alap Scene-t SampleScene-re (ha más neve van)
-4. Adjunk hozzá egy Canvas-t (Create -> UI -> Canvas)
-5. A Canvas-ra pedig vegyünk fel egy Text-et (UI -> Text)
-6. A Text mező default értékének “New Text”-et adtam, a Font Size-t pedig 24-re állítóttam. valamint elhelyeztem úgy, hogy a Game nézetben körülbelül a kijelző közepére kerüljön.
-7. A vászonra felvettem egy TextMesh-t is, aminek Default értékként “Hello World”-ot állítottam be, de lényegében ezt nem használom a későbbiekben.
-8. Amit én még itt csináltam a letisztultság kedvéért a Camera Background színét átállítóttam erre a kékeszöldre, hogy a megjelenő szöveget könnyen lehessen olvasni.
-9. Létrehoztam egy Empty Game Object-et PluginScript néven, amihez hozzáadtam egy Script Component-et (Add Component -> New Script) Plugin Wrapper néven. Ebbe írjuk az üzenetváltáshoz szükséges C# kódot.
-10. Először a kódban csak felvettem a Text típusú mezőt myText néven és implementáltam egy DefaultText() illetve egy SetText(string) függvényt. Amik közül az előbbi egy Default értéket állít be a myText mezőre, az utóbbi pedig a paraméterként átadott szót jeleníti meg a vásznon.
+3. Nevezzük át az alap Scene-t **SampleScene**-re (ha más neve van)
+4. Adjunk hozzá egy Canvas-t (**Create -> UI -> Canvas**)
+5. A Canvas-ra pedig vegyünk fel egy Text-et (**UI -> Text**)
+6. A Text mező **default** értékének **“New Text”**-et adtam, a **Font Size**-t pedig **24**-re állítóttam. valamint elhelyeztem úgy, hogy a Game nézetben körülbelül a kijelző közepére kerüljön (positioned to **center**).
+7. A vászonra felvettem egy **TextMesh**-t is, aminek Default értékként **“Hello World”**-ot állítottam be, de lényegében ezt nem használom a későbbiekben.
+8. Amit én még itt csináltam a letisztultság kedvéért a **Camera Background** színét átállítóttam erre a kékeszöldre, hogy a megjelenő szöveget könnyen lehessen olvasni.
+9. Létrehoztam egy **Empty Game Object**-et **PluginScript** néven, amihez hozzáadtam egy **Script Component**-et (**Add Component -> New Script**) **Plugin Wrapper** néven. Ebbe írjuk az üzenetváltáshoz szükséges C# kódot.
+10. Először a kódban csak felvettem a Text típusú mezőt **myText** néven és implementáltam egy **DefaultText()** illetve egy **SetText(string)** függvényt. Amik közül az előbbi egy Default értéket állít be a myText mezőre, az utóbbi pedig a paraméterként átadott szót jeleníti meg a vásznon.
 
+    ```C#
+    public Text myText;
+    ```
     ```C#
     void DefaultText()
     {
@@ -119,18 +130,45 @@ Tehát itt szeretném részletesen lépésről lépésre bemutatni azt, hogy jel
         myText.text = text;
     }
     ```
-11. Itt már végrehajtottam a Unity Projekt Importálását a Demo App-ba, hogy ki tudjam próbálni az eddigieket. Ezt a folyamatot pedig a KÖVETKEZŐ (7. fejezet) fejezetben leírtak alapján tudjuk megtenni!
-12. Majd tesztelésképp annyit csináltam első körben, hogy a Demo App MainFragment osztályában található getSteadyData() függvényhez tartozó OnClick eseményre elindítottam a UnityPlayerActivity és üzenetként átadtam egy tetszőleges stringet (‘notchposition’). Ezt a UnityPlayerActivity onStart() állapotában felfogtam és a UnitySendMessage függvény segítségével meghívtam az imént Unity-ben implementált PluginScript objektumban található PluginWrapper C# osztály SetText(string) függvényét.
+11. Itt már végrehajtottam a Unity Projekt Importálását a Demo App-ba, hogy ki tudjam próbálni az eddigieket. Ezt a folyamatot pedig a KÖVETKEZŐ (**7. fejezet**) fejezetben leírtak alapján tudjuk megtenni!
+12. Majd tesztelésképp annyit csináltam első körben, hogy a Demo App **MainFragment** osztályában található **getSteadyData()** függvényhez tartozó **OnClick** eseményre elindítottam a **UnityPlayerActivity** és üzenetként átadtam egy tetszőleges stringet (‘**notchposition**’). Ezt a UnityPlayerActivity **onStart()** állapotában felfogtam és a **UnitySendMessage** függvény segítségével meghívtam az imént Unity-ben implementált PluginScript objektumban található PluginWrapper C# osztály **SetText(string)** függvényét.
 
 ```Java
 Intent intent = new Intent(getBaseActivity(), UnityPlayerActivity.class);
 intent.putExtra("message", "notchposition");
 startActivity(intent);
 ```
+```Java
+Bundle bundle = getIntent().getExtras();
+String message = bundle.getString("message");
+UnityPlayer.UnitySendMessage("PluginScript", "SetText", message);
+```
 
- * * Itt megemlíteném, hogy ahhoz, hogy a tényleges szenzoroktól kapott adatokat tudjam továbbítani az adott Text mezőbe ezt a funkciót áthelyeztem a Start Real-Time hatására elinduló VisualiserActivity-be. Ahol a teszteléshez csak rögtönzötten a jobb felső sarokban lévő felül nézetre átváltó gomb (button_top_view) eseménykezelőjét , az onTopViewClicked() függvényt írtam át, hogy ez hívja a UnityPlayerActivity-t és indítsa el a Unity-ből exportált projektet.
-13. Miután ezzel a módszerrel sikerrel jártam átültettem a konzulensem által mutatott GitHub projekt (https://github.com/inbgche/Unity-Android-Communication) RocketLuncher Unity projekt Assets -> Scripts -> AndroidManager osztályában található kódot a PluginWrapper osztályomba.
-14. Majd ennek megfelelően az Android Studio-ba importalt UnityPlayerActivity osztályban implementáltam a javaTestFunc(string) függvényt amit az Activity elindításakor a C#-ban található Start() függvény hív meg.
+ * * Itt megemlíteném, hogy ahhoz, hogy a tényleges szenzoroktól kapott adatokat tudjam továbbítani az adott Text mezőbe ezt a funkciót áthelyeztem a Start Real-Time hatására elinduló **VisualiserActivity**-be. Ahol a teszteléshez csak rögtönzötten a jobb felső sarokban lévő felül nézetre átváltó gomb (button_top_view) eseménykezelőjét , az **onTopViewClicked()** függvényt írtam át, hogy ez hívja a **UnityPlayerActivity**-t és indítsa el a Unity-ből exportált projektet.
+
+```Java
+Intent intent = new Intent(this, UnityPlayerActivity.class);
+intent.putExtra("message", RelativeNotchPosition);
+startActivity(intent);
+```
+
+Itt a RelativeNotchPosition egy sztring változó, ami értékét a korábban említett **calculateAngles(int)** függvényben kapja és a szenzortól kapott adatok alapján feldolgozott Notch pozicióját tartalmazza.
+
+```Java
+private String RelativeNotchPosition;
+
+private void calculateAngles(int frameIndex) {
+...
+fvec3 chestAngles = new fvec3();
+...
+mData.calculateRelativeAngle(chest, root, frameIndex, chestAngles);
+RelativeNotchPosition = chestAngles.toString();
+...
+}
+```
+
+13. Miután ezzel a módszerrel sikerrel jártam átültettem a konzulensem által mutatott GitHub projekt (https://github.com/inbgche/Unity-Android-Communication) RocketLuncher Unity projekt **Assets -> Scripts -> AndroidManager** osztályában található kódot a PluginWrapper osztályomba.
+14. Majd ennek megfelelően az Android Studio-ba importalt UnityPlayerActivity osztályban implementáltam a **javaTestFunc(string)** függvényt amit az Activity elindításakor a C#-ban található **Start()** függvény hív meg.
 ```Java
 public void javaTestFunc(String strFromUnity){
         Bundle bundle = getIntent().getExtras();
@@ -141,8 +179,15 @@ public void javaTestFunc(String strFromUnity){
         UnityPlayer.UnitySendMessage("PluginScript", "SetJavaLog", message);
     }
 ```
-15. Annyit módosítottam a kódon, hogy én a javaTestFunc(string) függvényből nem a paraméterként kapott stringet íratom ki, hanem ez lehetne akár paraméter nélküli függvény is, mivel én itt a híváskor átadott “message” névvel jelölt kulcs értékét adom át és azzal hívom a C# kód SetJavaLog(string) függvényét, ami a myText mező értékének átadja ezt a karakterláncot.
-16. Itt végül még, hogy meggyőződjek arról, hogy a C# kódban található frissítés működik (és a probléma valóban az, hogy csak az utolsó NotchPosition sztringet veszi át) a Start()-ban hívott InvokeRepeating() függvény segítségével próbáltam ki, ami aminek megadtam, hogy az indulástól számított 0,1. másodperctől 0,1 másodpercenként hívja meg a repeatCall() függvényt, ami ugyanazt csinálja mint korábban a Start() maga tette, azaz elsüti a Java-ban található JavaTestFunc() függvényt.
+```C#
+void Start () {
+        //SetText("START");
+        PluginWrapper.GetInstance().CallJavaFunc("javaTestFunc", "UnityJavaJarTet");
+        Debug.Log("GO");
+	}
+```
+15. Annyit módosítottam a kódon, hogy én a **javaTestFunc(string)** függvényből nem a paraméterként kapott stringet íratom ki, hanem ez lehetne akár paraméter nélküli függvény is, mivel én itt a híváskor átadott “message” névvel jelölt kulcs értékét adom át és azzal hívom a C# kód **SetJavaLog(string)** függvényét, ami a **myText** mező értékének átadja ezt a karakterláncot.
+16. Itt végül még, hogy meggyőződjek arról, hogy a C# kódban található frissítés működik (és a probléma valóban az, hogy csak az utolsó NotchPosition sztringet veszi át) a **Start()**-ban hívott **InvokeRepeating(key, int, int)** függvény segítségével próbáltam ki, ami aminek megadtam, hogy az indulástól számított 0,1. másodperctől 0,1 másodpercenként hívja meg a **repeatCall()** függvényt, ami ugyanazt csinálja mint korábban a Start() maga tette, azaz elsüti a Java-ban található **JavaTestFunc()** függvényt.
 
 ```C#
 void Start () {
@@ -175,10 +220,10 @@ https://stackoverflow.com/questions/51959096/no-implementation-found-for-void-co
 
 ### Exportálás előkészítése:
 
-1. Edit -> Preferences -> External Tools menüpontnál megnézni, hogy be van-e húzva a megfelelő SDK, JDK illetve esetünkben arra jutottam, hogy szükség lesz az NDK-ra is.
-1. Ha van már Android Studio a gépen akkor valamilyen JDK-nak is lennie kéne. Ez esetemben a Program Files/Java mappában volt megtalálható és a jdk1.8.0_201-et tallóztam ide. Ha nincs JDK a gépen akkor a fenti videóban be van mutatva, hogy mi a tenedő.
+1. **Edit -> Preferences -> External Tools** menüpontnál megnézni, hogy be van-e húzva a megfelelő SDK, JDK illetve esetünkben arra jutottam, hogy szükség lesz az NDK-ra is.
+1. Ha van már Android Studio a gépen akkor valamilyen JDK-nak is lennie kéne. Ez esetemben a Program Files/Java mappában volt megtalálható és a **jdk1.8.0_201**-et tallóztam ide. Ha nincs JDK a gépen akkor a fenti videóban be van mutatva, hogy mi a tenedő.
 1. Ugyan így betallóztam az SDK-t is ami esetemben a Users/<user>/.android mappában található, így elég ezt a mappát tallózni.
-1. NDK viszont nem volt a gépen, azt letöltöttem egyet a Download gomb használatával (android-ndk-r13b), majd kicsomagoltam úgyszintén a 3. pontban is látott .android mappába és innen betallóztam.
+1. NDK viszont nem volt a gépen, azt letöltöttem egyet a Download gomb használatával (**android-ndk-r13b**), majd kicsomagoltam úgyszintén a 3. pontban is látott **.android** mappába és innen betallóztam.
 1. File -> Build Settings kiválasztani az Android platformot és Switch Platform.
 1. Player Settings megnyitása, oldalt a Package name-t átírni, például ‘com.unity3d.plugintest’-re
 1. Scripting Backend-et átállítani IL2CPP-re és az ARM64 checkboxot bepipálni (3. link alapján)
