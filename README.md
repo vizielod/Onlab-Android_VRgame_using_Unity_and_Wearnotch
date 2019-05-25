@@ -134,43 +134,47 @@ Tehát itt szeretném részletesen lépésről lépésre bemutatni azt, hogy jel
 12. Majd tesztelésképp annyit csináltam első körben, hogy a Demo App **MainFragment** osztályában található **getSteadyData()** függvényhez tartozó **OnClick** eseményre elindítottam a **UnityPlayerActivity** és üzenetként átadtam egy tetszőleges stringet (‘**notchposition**’). Ezt a UnityPlayerActivity **onStart()** állapotában felfogtam és a **UnitySendMessage** függvény segítségével meghívtam az imént Unity-ben implementált PluginScript objektumban található PluginWrapper C# osztály **SetText(string)** függvényét.
 
 ```Java
-@OnClick(R.id.btn_get_steady)
-void getSteadyData() {
-inProgress();
-mNotchService.getSteadyData(new EmptyCallback<Void>());
-Intent intent = new Intent(getBaseActivity(), UnityPlayerActivity.class);
-intent.putExtra("message", "notchposition");
-startActivity(intent);
-Log.i(LOGTAG, "getSteadyData");
-Log.i(LOGTAG, mNotchService.getSteadyData(new EmptyCallback<Void>()).toString());
-}
+    @OnClick(R.id.btn_get_steady)
+    void getSteadyData() {
+        inProgress();
+
+        mNotchService.getSteadyData(new EmptyCallback<Void>());
+        /*Intent intent = new Intent(getBaseActivity(), UnityPlayerActivity.class);
+        intent.putExtra("message", "notchposition");
+        startActivity(intent);*/
+
+        Log.i(LOGTAG, "getSteadyData");
+        Log.i(LOGTAG, mNotchService.getSteadyData(new EmptyCallback<Void>()).toString());
+    }
 ```
 ```Java
-@Override protected void onStart()
-{
-super.onStart();
- mUnityPlayer.start();
-Bundle bundle = getIntent().getExtras();
-String message = bundle.getString("message");
-UnityPlayer.UnitySendMessage("PluginScript", "SetText", message);
-Log.i(LOGTAG, "UnityProject Intent Started");
-}
+    @Override protected void onStart()
+    {
+        super.onStart();
+        mUnityPlayer.start();
+        Bundle bundle = getIntent().getExtras();
+        String message = bundle.getString("message");
+        UnityPlayer.UnitySendMessage("PluginScript", "SetText", message);
+        Log.i(LOGTAG, "UnityProject Intent Started");
+    }
 ```
 
  * * Itt megemlíteném, hogy ahhoz, hogy a tényleges szenzoroktól kapott adatokat tudjam továbbítani az adott Text mezőbe ezt a funkciót áthelyeztem a Start Real-Time hatására elinduló **VisualiserActivity**-be. Ahol a teszteléshez csak rögtönzötten a jobb felső sarokban lévő felül nézetre átváltó gomb (button_top_view) eseménykezelőjét , az **onTopViewClicked()** függvényt írtam át, hogy ez hívja a **UnityPlayerActivity**-t és indítsa el a Unity-ből exportált projektet.
 
 ```Java
-@OnClick(R.id.button_top_view)
-void onTopViewClicked() {
-/*if (mRenderer != null) {
-mRenderer.setCameraBeta(0.0f);
-mRenderer.setCameraAlpha((float) Math.PI/2.0f);
-}
-refreshUI();*/
-Intent intent = new Intent(this, UnityPlayerActivity.class);
-intent.putExtra("message", RelativeNotchPosition);
-startActivity(intent);
-}
+    @OnClick(R.id.button_top_view)
+    void onTopViewClicked() {
+        /*if (mRenderer != null) {
+            mRenderer.setCameraBeta(0.0f);
+            mRenderer.setCameraAlpha((float) Math.PI/2.0f);
+        }
+        refreshUI();*/
+        Intent intent = new Intent(this, UnityPlayerActivity.class);
+        //intent.putExtra("message", "notchposition");
+        intent.putExtra("message", RelativeNotchPosition);
+        startActivity(intent);
+        //startService(intent);
+    }
 ```
 
 Itt a RelativeNotchPosition egy sztring változó, ami értékét a korábban említett **calculateAngles(int)** függvényben kapja és a szenzortól kapott adatok alapján feldolgozott Notch pozicióját tartalmazza.
@@ -180,10 +184,10 @@ private String RelativeNotchPosition;
 
 private void calculateAngles(int frameIndex) {
 ...
-fvec3 chestAngles = new fvec3();
+	fvec3 chestAngles = new fvec3();
 ...
-mData.calculateRelativeAngle(chest, root, frameIndex, chestAngles);
-RelativeNotchPosition = chestAngles.toString();
+	mData.calculateRelativeAngle(chest, root, frameIndex, chestAngles);
+	RelativeNotchPosition = chestAngles.toString();
 ...
 }
 ```
