@@ -30,6 +30,14 @@ Tehát itt szeretném részletesen lépésről lépésre bemutatni azt, hogy jel
 8. Amit én még itt csináltam a letisztultság kedvéért a Camera Background színét átállítóttam erre a kékeszöldre, hogy a megjelenő szöveget könnyen lehessen olvasni.
 9. Létrehoztam egy Empty Game Object-et PluginScript néven, amihez hozzáadtam egy Script Component-et (Add Component -> New Script) Plugin Wrapper néven. Ebbe írjuk az üzenetváltáshoz szükséges C# kódot.
 10. Először a kódban csak felvettem a Text típusú mezőt myText néven és implementáltam egy DefaultText() illetve egy SetText(string) függvényt. Amik közül az előbbi egy Default értéket állít be a myText mezőre, az utóbbi pedig a paraméterként átadott szót jeleníti meg a vásznon.
+    void DefaultText()
+    {
+        SetText("DEFAULT");
+    }
+    public void SetText(string text)
+    {
+        myText.text = text;
+    }
 11. Itt már végrehajtottam a Unity Projekt Importálását a Demo App-ba, hogy ki tudjam próbálni az eddigieket. Ezt a folyamatot pedig a KÖVETKEZŐ (7. fejezet) fejezetben leírtak alapján tudjuk megtenni!
 12. Majd tesztelésképp annyit csináltam első körben, hogy a Demo App MainFragment osztályában található getSteadyData() függvényhez tartozó OnClick eseményre elindítottam a UnityPlayerActivity és üzenetként átadtam egy tetszőleges stringet (‘notchposition’). Ezt a UnityPlayerActivity onStart() állapotában felfogtam és a UnitySendMessage függvény segítségével meghívtam az imént Unity-ben implementált PluginScript objektumban található PluginWrapper C# osztály SetText(string) függvényét.
 
