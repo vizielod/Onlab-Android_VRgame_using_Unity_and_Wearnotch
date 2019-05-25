@@ -192,15 +192,15 @@ https://stackoverflow.com/questions/51959096/no-implementation-found-for-void-co
 ### Importálás a Demo app-ba:
 
 1. Az Android Studio itt kicsit elszórakoztatja magát, frissít egyet és bekerül a UnityProjekt mappa a Project nézetbe.
-1. A build.gradle-ben (Module:UnityProject) törölni a buildToolsVersion sort és az applicationID-t
-1. apply plugin: ‘com.android.application’ sort átírni apply plugin: ‘com.android.library’ -re
-1. Az AndroidManifest.xml fájlból törölni:
-1.  az application tag-hez tartozó attribútumokat 
-1. az intent-filter alól a .MAIN és a .LAUNCHER végű sorokat
-1. valamint a uses-permission tag-el kezdődő sorok .INTERNET, .WRITE_EXTERNAL_STORAGE és .READ_EXTERNAL_STORAGE utáni részeket.
-1. A settings.gradle-ben include-hoz felvenni a ‘:UnityProject’-et (vesszővel elválasztva)
-1. Végül pedig a build.gradle(Module:app) -ban a dependencies-hez felvenni a következő sort: implementation project(‘:UnityProject’)
-1. Ha sikerült edig eljutni, akkor Android Studioban nyomjunk egy Clean Project-et, majd Rebuild Project.
+1. A **build.gradle**-ben (Module:UnityProject) törölni a **buildToolsVersion** sort és az **applicationID**-t
+1. **apply plugin: ‘com.android.application’** sort átírni **apply plugin: ‘com.android.library’** -re
+1. Az **AndroidManifest.xml** fájlból törölni:
+	1. az **application** tag-hez tartozó attribútumokat 
+	1. az **intent-filter** alól a **.MAIN** és a **.LAUNCHER** végű sorokat
+	1. valamint a **uses-permission** tag-el kezdődő sorok **.INTERNET**, **.WRITE_EXTERNAL_STORAGE** és **.READ_EXTERNAL_STORAGE** utáni részeket.
+1. A **settings.gradle**-ben include-hoz felvenni a **‘:UnityProject’**-et (vesszővel elválasztva)
+1. Végül pedig a **build.gradle(Module:app)** -ban a **dependencies**-hez felvenni a következő sort: **implementation project(‘:UnityProject’)**
+1. Ha sikerült edig eljutni, akkor Android Studioban nyomjunk egy **Clean Project**-et, majd **Rebuild Project**.
 1. Az eddigi lépéseket követve én itt sikerrel jártam és az Androidos eszközömön sikeresen tudtam futtatni az alkalmazást ami a myText mezőbe kiírta a kívánt üzenetet. Első próbálkozásaimra csak egy egyszerűen átadott “notchposition” sztringet, később pedig a szenzortól kapott adatokat (csak az Activity meghívásának pillanatában kapott utolsó adatot.
 
 
