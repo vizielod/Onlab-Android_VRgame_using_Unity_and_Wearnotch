@@ -217,3 +217,52 @@ Fragment hívás hatására nem történik ilyen probléma így elkezdtem ezzel 
 1. Mostmár a Fragmentem hívásának hatására a képernyő felső sorába bekerült egy sor pirossal, ami ugyan ezeket az adatokat írja ki, de ez a teszt fázis volt, mivel azt gondoltam, hogy akkor ezt így a UnityPlayerActivity-ből is ki tudom majd íratni, de sajnos ez nem sikerült.
 
 ![](https://github.com/vizielod/Onlab-Android_VRgame_using_Unity_and_Wearnotch/blob/master/img/61126917_359408791353761_5281296768770768896_n.png)
+
+
+## 8. Rögzített mozgás 3D karakterre való ráhelyezése Unityben
+
+Igazából ez volt az a dolog amivel a félév elején foglalkozni kezdtem miután megismerkedtem a WearNotch rendszer illetve az alkalmazás működésével. Viszont ez az előző gondolatmenetbe nem illett volna bele ezért inkább mostanra hagytam ennek a bemutatását.
+
+A projektem ezen része igazából főképp az alábbi Youtube tutorial videókon nyugszik:
+
+* https://www.youtube.com/watch?v=dCwNaE_eVsM
+* https://www.youtube.com/watch?v=UeUgfA6ZWNs
+* https://www.youtube.com/watch?v=nGdCPpWyjM8
+
+### Lépések:
+
+1. Unity 2018-as Projekt létrehozása (Wearnotch_test nevet adtam neki)
+1. Szükség volt egy karakterre, mivel a Notch avatárhoz még nem tartozik default mesh. Tehát az Assett store-ban kezdtem keresgélni és én végül egy ingyenes Knight prefab letöltése mellett döntöttem.
+1. Az első két videó alapján a Knight prefab-ot felhasználva létrehoztam egy ragdoll-t.
+1. A wearnotch honlapjára belépve a Library-ból letöltöttem egy korábban felvett mozdulatsorom .FBX és .BVH fájlját, majd ezt bemásoltam a Unity projekt Assets mappájába.
+1. Innentől követtem a harmadik videóban látható lépéseket a 10. perc 40. másodpercétől és az alapján sikerült életre kelteni a lovagomat.
+
+	## **Futtatás Android eszközön**
+
+Innen kíváncsi voltam, hogy nézne ki ez Android eszközön futtatva. Ehhez a már korábbiakban bemutatott lépésekhez hasonlókat kellett elvégezzem. Vagyis a Build Settings-nél a Platformot átállítani Android-ra, a Player Settings-nél a a Package Name-t átírni (com.bme.Wearnotch_test). Valamint ez esetben a Build Settings-nél nem Exportálni szeretnénk, így Build System-nek Internal-t válasszuk és a Development Build-et sem kell kiválasztani. Viszont figyeljünk itt is arra, hogy a Scene hozzá legyen adva a Scenes in Build listához.
+
+![](https://github.com/vizielod/Onlab-Android_VRgame_using_Unity_and_Wearnotch/blob/master/img/60633367_435723150560375_4710838130184290304_n.png)
+
+Ha ez megvan és csatlakoztattuk a telefonunkat a számítógéphez, akkor a Build and Run-ra kattintva, először egy Build mappába mentsük ki a .apk-t, majd ez automatikusan lefordul a telefonunkra és lefut az eszközön.
+
+## 	**Futtatás Cardboard segítségével**
+
+Ezek után szerettem volna azt is megnézni, hogy hogyan nézhet ki ez az Androidos VR opció használatával, vagyis Google Cardboard-al, ami házilag is elkészíthető de nekem egy korábbi állásbörzéről pont került itthon egy Graphisoft-os nagyon jól használható keret.
+
+Az alábbi videót követtem:
+
+https://www.youtube.com/watch?v=G1jR6q59iLg
+
+Nagyon letisztul és könnyen érthető így sikerült is ezt probléma nélkül megvalósítsam és kipróbáljam, ahogy a képek is szemléltetik. Először csak 3D-s nézetben, majd az elképzelt játékhoz hűen 1st person nézetben is kipróbáltam. Amihez nemtudom, hogy a legjobb megoldást választottam-e, de egyszerűen fogtam és a kamerát a karakter feje helyén helyeztem el. (Lehet van ennél kifinomultabb módszer is). 
+
+### 3rd Person nézet:
+
+![](https://github.com/vizielod/Onlab-Android_VRgame_using_Unity_and_Wearnotch/blob/master/img/55835889_2026001794372170_3505759015181221888_n.png)
+
+### 1st Person nézet:
+
+![](https://github.com/vizielod/Onlab-Android_VRgame_using_Unity_and_Wearnotch/blob/master/img/60808513_434346517141511_6002070943365595136_n.png)
+![](https://github.com/vizielod/Onlab-Android_VRgame_using_Unity_and_Wearnotch/blob/master/img/60805149_424105764840705_1364593427282395136_n.png)
+
+
+<footer> Vizi Előd - BME - Szoftverfejlesztés/AUT - Önlabor - 2019 </footer>
