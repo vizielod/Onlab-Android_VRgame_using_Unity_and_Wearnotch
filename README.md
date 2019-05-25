@@ -75,7 +75,7 @@ Következő lépésként arra jutottam, hogy szükség lesz valamilyen valós id
   
 A következő pontokban lássuk az említett 3. opcióval való próbálkozás részletes bemutatását.
 
-
+## 6. Demo App működése és kommunikációja a beimportált Unity Projekttel
 
 Tehát itt szeretném részletesen lépésről lépésre bemutatni azt, hogy jelenleg hol is tartok és hogyan jutottam ide az alkalmazással.
 
@@ -162,3 +162,58 @@ void Start () {
 17. Ezek után a UnityPlayerActivity osztály javaTestFunc() fügvényéhez hozzávettem egy sima integer változót amit minden függvényhíváskor növelek egyel, így azt látom a képernyőre kiírt üzeneten, hogy valóban minden 0,1. másodpercben ismét meghívódik ez a függvény és a kiírás is újra megtörténik, mivel ez a számláló pörög felfele, viszont a szenzor pozíciójának adatának továbbra is csak az utolsó Activity indításkor átadott paraméter íródik ki. (A képen látható 281-es szám ez a számláló)
 
 ![](https://github.com/vizielod/Onlab-Android_VRgame_using_Unity_and_Wearnotch/blob/master/img/60761539_2226615617651572_5465133429307736064_n.png)
+
+## 7. Unity projekt importálása meglévő Android Studio projektbe.
+
+Felsorolom és leírom a lépéseket, hogy én pontosan hogy és mit csináltam, de mindezeket az alábbi tutoriálok alapján csináltam amik elég szépen leírják lépésről lépésre, hogy mit kell tenni:
+
+https://stackoverflow.com/questions/35535310/how-to-import-unity-project-into-existing-android-studios-project
+
+https://www.youtube.com/watch?v=GEQSaF4LPgk
+
+https://stackoverflow.com/questions/51959096/no-implementation-found-for-void-com-unity3d-player-unityplayer-nativerestartact
+
+### Exportálás előkészítése:
+
+1. Edit -> Preferences -> External Tools menüpontnál megnézni, hogy be van-e húzva a megfelelő SDK, JDK illetve esetünkben arra jutottam, hogy szükség lesz az NDK-ra is.
+1. Ha van már Android Studio a gépen akkor valamilyen JDK-nak is lennie kéne. Ez esetemben a Program Files/Java mappában volt megtalálható és a jdk1.8.0_201-et tallóztam ide. Ha nincs JDK a gépen akkor a fenti videóban be van mutatva, hogy mi a tenedő.
+1. Ugyan így betallóztam az SDK-t is ami esetemben a Users/<user>/.android mappában található, így elég ezt a mappát tallózni.
+1. NDK viszont nem volt a gépen, azt letöltöttem egyet a Download gomb használatával (android-ndk-r13b), majd kicsomagoltam úgyszintén a 3. pontban is látott .android mappába és innen betallóztam.
+1. File -> Build Settings kiválasztani az Android platformot és Switch Platform.
+1. Player Settings megnyitása, oldalt a Package name-t átírni, például ‘com.unity3d.plugintest’-re
+1. Scripting Backend-et átállítani IL2CPP-re és az ARM64 checkboxot bepipálni (3. link alapján)
+1. Valamint ha az Auto Graphics API ki van választva, akkor vegyük ki onnan a pipát és a Graphics APIs alatt a Vulkan-t húzzuk az OpenGLES3 fölé. Az alapértelmezett beállítással nekem a Buildelés és exportálás főleg az első alkalommal egy teljes éjszakát felvett. Ezen beálításokkal viszont emberi időben lefut.
+1. Győződjünk meg arról, hogy a Build Settings-nél a Build System Gradle-re van állíva, illetve a Development Build-et is válasszuk ki, ha alapból nincs.
+
+### Exportálás:
+
+1. Ha mindez megvan akkor mehet az Export. Az exportálást pedig az Android Studio projektjének mappájába tegyük meg, ami esetünkben a Demo App Tutorial mappája lesz. Itt létre fog jönni egy UnityProject nevű mappa ami tartalmazza a kiexportált projektet.
+
+### Importálás a Demo app-ba:
+
+1. Az Android Studio itt kicsit elszórakoztatja magát, frissít egyet és bekerül a UnityProjekt mappa a Project nézetbe.
+1. A build.gradle-ben (Module:UnityProject) törölni a buildToolsVersion sort és az applicationID-t
+1. apply plugin: ‘com.android.application’ sort átírni apply plugin: ‘com.android.library’ -re
+1. Az AndroidManifest.xml fájlból törölni:
+1.  az application tag-hez tartozó attribútumokat 
+1. az intent-filter alól a .MAIN és a .LAUNCHER végű sorokat
+1. valamint a uses-permission tag-el kezdődő sorok .INTERNET, .WRITE_EXTERNAL_STORAGE és .READ_EXTERNAL_STORAGE utáni részeket.
+1. A settings.gradle-ben include-hoz felvenni a ‘:UnityProject’-et (vesszővel elválasztva)
+1. Végül pedig a build.gradle(Module:app) -ban a dependencies-hez felvenni a következő sort: implementation project(‘:UnityProject’)
+1. Ha sikerült edig eljutni, akkor Android Studioban nyomjunk egy Clean Project-et, majd Rebuild Project.
+1. Az eddigi lépéseket követve én itt sikerrel jártam és az Androidos eszközömön sikeresen tudtam futtatni az alkalmazást ami a myText mezőbe kiírta a kívánt üzenetet. Első próbálkozásaimra csak egy egyszerűen átadott “notchposition” sztringet, később pedig a szenzortól kapott adatokat (csak az Activity meghívásának pillanatában kapott utolsó adatot.
+
+
+	## **Próbálkozás Fragmenttel**
+
+Szomorúan kellett tapasztaljam, hogy az előzőekben leírtak alapján csak a UnityPlayerActivity meghívásának pillanatában kapott utolsó adatot írja ki a képernyőre. Ami nem is olyan meglepő mivel egy újonnan induló a korábbi Activity-t Pause() állapotba kényszeríti.
+Fragment hívás hatására nem történik ilyen probléma így elkezdtem ezzel is próbálkozni. De sajnos nem túl sok sikerrel így ezt nem részletezném túlzottan. Talán ha meg lehetne azt oldani, hogy a UnityPlayerActivity osztályból Fragmentet csinálni akkor az még jó megoldás lenne. De ez vagy nem is valósítható meg, vagy ha igen akkor nagyon macerás és nagyon sok és fárasztó meló árán.
+
+### Tehát amit itt csináltam:
+
+1. Felvettem egy üres Fragmentet BlankFragment2 néven a UnityProject mappába a UnityPlayerActivity mellé.
+1. A VisualiserActivity osztályban implementáltam egy startFragment() függvényt ami nem csinál mást mint elindítja a BlankFragment2 fragmentet és átad neki egy üzenetet, ami ez esetben a RelativeNotchPosition változóban tárolt Szenzor pozíciót leíró dőlésszögek.
+1. Ezt a függvényt pedig meghívom a VisualiserActivity refreshAngles() függvényből ami a már eddig is implementált valós idejű kiíratásért volt felelős. Vagyis minden frame-ben meghívta a calculateAngles() függvényt ami a megfelelő helyre kiírta a szenzortól kapott pozíció adatait.
+1. Mostmár a Fragmentem hívásának hatására a képernyő felső sorába bekerült egy sor pirossal, ami ugyan ezeket az adatokat írja ki, de ez a teszt fázis volt, mivel azt gondoltam, hogy akkor ezt így a UnityPlayerActivity-ből is ki tudom majd íratni, de sajnos ez nem sikerült.
+
+![](https://github.com/vizielod/Onlab-Android_VRgame_using_Unity_and_Wearnotch/blob/master/img/61126917_359408791353761_5281296768770768896_n.png)
